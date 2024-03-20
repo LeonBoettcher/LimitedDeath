@@ -1,0 +1,8 @@
+#Max death credit limit
+death_credit_limit: 3
+
+#Max death credit regeneration per day
+death_credit_regen_per_day: 5
+
+#Time death regen time in minutes
+death_credit_regen_time: 120

@@ -1,0 +1,11 @@
+name: LimitedDeath
+version: '${project.version}'
+main: de.lasymasy.limiteddeath.LimitedDeath
+api-version: '1.20'
+
+commands:
+  limitetdeath:
+    description: The main command for LimitedDeath plugin.
+    usage: /limitetdeath <subcommand>
+
+

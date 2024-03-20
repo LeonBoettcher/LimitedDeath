@@ -1,0 +1,64 @@
+package de.lasymasy.limiteddeath;
+
+import org.bukkit.command.Command;
+import org.bukkit.command.CommandExecutor;
+import org.bukkit.command.CommandSender;
+import org.jetbrains.annotations.NotNull;
+
+import java.util.UUID;
+
+public class Commands implements CommandExecutor {
+
+    private final LimitedDeath plugin;
+    public Commands(LimitedDeath limitedDeath) {
+        this.plugin = limitedDeath;
+    }
+
+    @Override
+    public boolean onCommand(@NotNull CommandSender commandSender, @NotNull Command command, @NotNull String s, @NotNull String[] args) {
+        if (s.equalsIgnoreCase("limitetdeath") || s.equalsIgnoreCase("ld")) {
+            if (args.length >= 1) {
+                String subCommand = args[0].toLowerCase();
+                if (subCommand.equals("setcoins")) {
+                    // Handle setcoins command
+                    if (args.length != 3) {
+                        commandSender.sendMessage("Usage: /" + s + " setcoins <player> <count>");
+                        return true;
+                    }
+                    String player = util.getUUIDFromName(args[1]);
+                    String credits_set = args[2];
+
+                    commandSender.sendMessage("Player: " + util.getNameFromUUID(player) + " has currently " + plugin.getDeathCredits(UUID.fromString(player)) + " and would be set to " + credits_set);
+                    plugin.setDeathCredits(UUID.fromString(player), Integer.parseInt(credits_set), plugin.getNextRegenTime(UUID.fromString(player)));
+
+                } else if (subCommand.equals("show")) {
+                    // Handle viewcoins command
+                    if (args.length != 1) {
+                        commandSender.sendMessage("Usage: /" + s + " view");
+                        return true;
+                    }
+                    String player = util.getUUIDFromName(args[1]);
+                    commandSender.sendMessage("Player: " + util.getNameFromUUID(player) + " has currently " + plugin.getDeathCredits(UUID.fromString(player)));
+                    // Your viewcoins logic here
+
+                } else if (subCommand.equals("showall")) {
+                    // Handle showall command
+
+
+                    for (UUID playerId : plugin.getAllPlayers()) {
+                        commandSender.sendMessage(playerId.toString() + ": " + plugin.getDeathCredits(playerId));
+                    }
+                    return true;
+
+                }
+                return true;
+            } else {
+                commandSender.sendMessage("Unknown subcommand. Available subcommands: setcoins, viewcoins, show, showall");
+                return true;
+            }
+        } else {
+            commandSender.sendMessage("Usage: /" + s + " <subcommand>");
+            return true;
+        }
+    }
+}
