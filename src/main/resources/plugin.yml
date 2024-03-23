@@ -7,5 +7,4 @@ commands:
   limitetdeath:
     description: The main command for LimitedDeath plugin.
     usage: /limitetdeath <subcommand>
-
-
+    aliases: [ld]

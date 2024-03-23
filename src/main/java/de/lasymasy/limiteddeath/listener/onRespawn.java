@@ -4,16 +4,16 @@ import de.lasymasy.limiteddeath.LimitedDeath;
 import de.lasymasy.limiteddeath.util;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
-import org.bukkit.event.entity.PlayerDeathEvent;
+import org.bukkit.event.player.PlayerRespawnEvent;
 
-public class onDeath implements Listener {
+public class onRespawn implements Listener {
     private LimitedDeath limitdeath;
-    public onDeath(LimitedDeath limitdeath) {
+    public onRespawn(LimitedDeath limitdeath) {
         this.limitdeath = limitdeath;
     }
 
     @EventHandler
-    public void onDeath(PlayerDeathEvent event) {
+    public void onRespawn(PlayerRespawnEvent event) {
 
         if(limitdeath.getNextRegenTime(event.getPlayer().getUniqueId()) == 0){
             //set regen time to in 2h, player was full of death credits

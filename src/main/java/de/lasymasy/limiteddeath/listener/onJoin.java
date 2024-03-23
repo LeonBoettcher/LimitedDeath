@@ -18,17 +18,23 @@ public class onJoin implements Listener {
     @EventHandler
     public void onJoin(PlayerJoinEvent event) {
         UUID playerId = event.getPlayer().getUniqueId();
+        long next_regen = limitdeath.getNextRegenTime(playerId);
 
         limitdeath.loadDeathCreditsFile();
-        if(!limitdeath.hasDeathCredit(event.getPlayer().getUniqueId())){
+        if (!limitdeath.hasDeathCredit(event.getPlayer().getUniqueId())) {
             limitdeath.setDeathCredits(event.getPlayer().getUniqueId(), 3, 0);
         }
         limitdeath.saveDeathCreditsFile();
-        event.getPlayer().sendMessage("[LimitedDeath] Du hast derzeit " + limitdeath.getDeathCredits(event.getPlayer().getUniqueId()) + "/" + limitdeath.getMax_deathcredits() + " Todescredits");
+        if (next_regen == 0) {
+            event.getPlayer().sendMessage("[LimitedDeath] Du hast derzeit " + limitdeath.getDeathCredits(event.getPlayer().getUniqueId()) + "/" + limitdeath.getMax_deathcredits() + " Todescredits");
+        }else {
+            event.getPlayer().sendMessage("[LimitedDeath] Du hast derzeit " + limitdeath.getDeathCredits(event.getPlayer().getUniqueId()) + "/" + limitdeath.getMax_deathcredits() + " Todescredits - Nächstes Credit in " + util.formatTime(next_regen));
         }
+    }
     @EventHandler
     public void onPlayerLogin(PlayerLoginEvent event) {
         // Get player UUID
+        limitdeath.loadDeathCreditsFile();
         UUID playerId = event.getPlayer().getUniqueId();
 
         // Check if the player has death credits

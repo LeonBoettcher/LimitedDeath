@@ -1,5 +1,6 @@
 package de.lasymasy.limiteddeath;
 
+import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 
@@ -49,7 +50,19 @@ public class util {
             inputReader.close();
 
             JsonObject jsonObject = JsonParser.parseString(response.toString()).getAsJsonObject();
-            return jsonObject.get("id").getAsString();
+            String rawUUID = jsonObject.get("id").getAsString();
+
+            // Insert hyphens into the UUID string at appropriate positions
+            String formattedUUID = String.format(
+                    "%s-%s-%s-%s-%s",
+                    rawUUID.substring(0, 8),
+                    rawUUID.substring(8, 12),
+                    rawUUID.substring(12, 16),
+                    rawUUID.substring(16, 20),
+                    rawUUID.substring(20)
+            );
+
+            return formattedUUID;
         } catch (Exception e) {
             e.printStackTrace();
             return null;
@@ -59,23 +72,27 @@ public class util {
     // Method to get player name from UUID
     public static String getNameFromUUID(String uuid) {
         try {
-            String urlString = "https://api.mojang.com/user/profiles/" + uuid + "/names";
+            String urlString = "https://api.mojang.com/user/profile/" + uuid;
             URL url = new URL(urlString);
             HttpURLConnection connection = (HttpURLConnection) url.openConnection();
             connection.setRequestMethod("GET");
 
-            BufferedReader inputReader = new BufferedReader(new InputStreamReader(connection.getInputStream()));
-            StringBuilder response = new StringBuilder();
-            String inputLine;
-            while ((inputLine = inputReader.readLine()) != null) {
-                response.append(inputLine);
-            }
-            inputReader.close();
+            int responseCode = connection.getResponseCode();
+            if (responseCode == 200) {
+                BufferedReader inputReader = new BufferedReader(new InputStreamReader(connection.getInputStream()));
+                StringBuilder response = new StringBuilder();
+                String inputLine;
+                while ((inputLine = inputReader.readLine()) != null) {
+                    response.append(inputLine);
+                }
+                inputReader.close();
 
-            String responseString = response.toString();
-            int startIndex = responseString.lastIndexOf("name\":\"") + 7;
-            int endIndex = responseString.indexOf("\"", startIndex);
-            return responseString.substring(startIndex, endIndex);
+                JsonObject jsonObject = JsonParser.parseString(response.toString()).getAsJsonObject();
+                return jsonObject.get("name").getAsString();
+            } else {
+                System.out.println("Error: HTTP status code " + responseCode);
+                return null;
+            }
         } catch (Exception e) {
             e.printStackTrace();
             return null;

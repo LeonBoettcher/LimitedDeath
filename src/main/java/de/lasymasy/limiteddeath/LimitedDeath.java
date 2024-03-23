@@ -1,11 +1,9 @@
 package de.lasymasy.limiteddeath;
 
-import de.lasymasy.limiteddeath.listener.onDeath;
+import de.lasymasy.limiteddeath.listener.onRespawn;
 import de.lasymasy.limiteddeath.listener.onJoin;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
-import org.bukkit.plugin.Plugin;
-import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitRunnable;
 
@@ -38,13 +36,14 @@ public final class LimitedDeath extends JavaPlugin {
         saveDefaultConfig();
         readConfig();
         getServer().getPluginManager().registerEvents(new onJoin(this), this);
-        getServer().getPluginManager().registerEvents(new onDeath(this), this);
+        getServer().getPluginManager().registerEvents(new onRespawn(this), this);
         createDeathCreditsSaveFile();
         loadDeathCreditsFile();
         startDeathCreditsRegen();
 
         // Register commands
         getCommand("limitetdeath").setExecutor(new Commands(this));
+        getCommand("ld").setExecutor(new Commands(this));
     }
 
     @Override
@@ -64,19 +63,19 @@ public final class LimitedDeath extends JavaPlugin {
     }
 
     public void checkRegeneration() {
-        getLogger().info("Checking regeneration of credits");
+        //getLogger().info("Checking regeneration of credits");
         loadDeathCreditsFile();
         long currentTime = System.currentTimeMillis() / 1000; // Current time in Unix timestamp
         for (UUID playerId : deathCredits.keySet()) {
             DeathCreditData data = deathCredits.get(playerId);
-            getLogger().info("Checking Player " + playerId + " --- Data: Time_next_Gen_File: " + data.getNextRegenTime() + " Current Time: " + currentTime);
+            //getLogger().info("Checking Player " + playerId + " --- Data: Time_next_Gen_File: " + data.getNextRegenTime() + " Current Time: " + currentTime);
             if (data.getNextRegenTime() / 1000 <= currentTime) {
-                getLogger().info("Player has passed Regentime");
+                //getLogger().info("Player has passed Regentime");
                 int currentCredits = data.getCredits();
                 int currentNextRegenTime = (int) data.getNextRegenTime();
                 int maxCredits = max_deathcredits_int;
                 if (currentCredits < maxCredits) {
-                    getLogger().info("Player hasnt reached maxCredits");
+                    //getLogger().info("Player hasnt reached maxCredits");
                     // Increment death credits and update next regeneration time
                     int regeneratedCredits = Math.min(currentCredits + 1, maxCredits);
 
@@ -88,15 +87,15 @@ public final class LimitedDeath extends JavaPlugin {
                     }
 
                     sendMessagetoChat("DeathCredits sind Regeneriert worden auf " + regeneratedCredits, playerId);
-                    getLogger().info("Player has regenerated");
+                    //getLogger().info("Player has regenerated");
                 } else {
                     //check if this is the time were deathcredits get Full
                     if(currentNextRegenTime != 0){
                         //Send Notification That Credits are now Full
-                        getLogger().info("Player has regenerated fully");
+                       // getLogger().info("Player has regenerated fully");
                         sendMessagetoChat("Deathcredits voll (Platzhalter Später überarbeiten", playerId);
                     }else{
-                        getLogger().info("Player is already full");
+                        //getLogger().info("Player is already full");
                     }
                     setDeathCredits(playerId, maxCredits, 0);
                 }
